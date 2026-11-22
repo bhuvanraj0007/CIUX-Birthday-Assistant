@@ -1,0 +1,73 @@
+# 🎂 CIUX Birthday Assistant
+
+## 📌 Project Overview
+
+CIUX Birthday Assistant is a conversational AI application developed through five progressive versions (V1–V5). The project demonstrates the evolution of a chatbot from a simple rule-based system to an intelligent conversational assistant with Natural Language Understanding (NLU), Dialogue Management, Large Language Model (LLM) integration, and voice interaction.
+
+The assistant helps users retrieve birthday-related information through natural language conversations.
+
+## 🎯 Objectives
+
+- Develop an interactive conversational birthday assistant.
+- Understand user queries using Natural Language Understanding.
+- Retrieve birthday information from a structured dataset.
+- Improve conversational context handling.
+- Integrate Large Language Models for improved query understanding.
+- Enable voice-based interaction.
+
+## 🚀 Project Evolution
+
+### V1 – Basic Rule-Based Chatbot
+- Basic chatbot interface.
+- Rule-based query processing.
+- Birthday information retrieval.
+- Simple frontend and backend integration.
+
+### V2 – Rule-Based NLU
+- Improved natural language query understanding.
+- Intent and entity identification.
+- Structured query processing.
+- Improved response generation.
+
+### V3 – Dialogue Management
+- Conversational context management.
+- Context-aware responses.
+- Follow-up question handling.
+- Dialogue state tracking.
+
+### V4 – LLM-Based NLU
+- Large Language Model integration.
+- Semantic query understanding.
+- Structured output generation.
+- Rule-based fallback.
+- Data-grounded birthday responses.
+
+### V5 – Voice Assistant
+- Voice input.
+- Speech recognition.
+- Voice output.
+- Text and voice conversational interaction.
+
+## 🛠️ Technologies Used
+
+- Python
+- Flask
+- HTML5
+- CSS3
+- JavaScript
+- Natural Language Understanding (NLU)
+- Large Language Models (LLMs)
+- Excel Dataset
+- Git
+- GitHub
+
+## 📂 Repository Structure
+
+```text
+CIUX-Birthday-Assistant/
+│
+├── CIUX_Birthday_Assistant_V1/
+├── CIUX_Birthday_Assistant_V2/
+├── CIUX_Birthday_Assistant_V3/
+├── CIUX_Birthday_Assistant_V4/
+├── CIUX_Birthday_Assistant_V5
