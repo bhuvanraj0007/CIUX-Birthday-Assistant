@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CIUX Birthday Assistant – V5</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <div class="app-layout">
+        <!-- Main Chat Container -->
+        <main class="chat-container">
+            <!-- Header -->
+            <header class="chat-header">
+                <div class="header-brand">
+                    <div class="brand-avatar">
+                        <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                            <circle cx="12" cy="7" r="4"></circle>
+                        </svg>
+                    </div>
+                    <div class="brand-info">
+                        <div class="title-row">
+                            <h1 class="chat-title">CIUX Birthday Assistant</h1>
+                            <span class="version-badge">V5 Voice</span>
+                        </div>
+                        <p class="chat-subtitle">Grounded in Excel • Voice & LLM Enabled</p>
+                    </div>
+                </div>
+
+                <!-- Header Actions & Controls -->
+                <div class="header-controls">
+                    <!-- Status indicator -->
+                    <div id="statusPill" class="status-pill status-ready" title="System Status">
+                        <span class="status-dot"></span>
+                        <span id="statusText">Ready</span>
+                    </div>
+
+                    <!-- Voice Response Toggle -->
+                    <div class="control-item" title="Toggle automatic speech synthesis for assistant replies">
+                        <label class="switch-label" for="voiceToggle">
+                            <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2">
+                                <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
+                                <path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07"></path>
+                            </svg>
+                            <span class="control-text">Voice Response</span>
+                        </label>
+                        <label class="toggle-switch">
+                            <input type="checkbox" id="voiceToggle">
+                            <span class="slider"></span>
+                        </label>
+                    </div>
+
+                    <!-- Debug Panel Toggle -->
+                    <div class="control-item" title="Show real-time NLU intent and entity extraction details">
+                        <label class="switch-label" for="debugToggle">
+                            <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2">
+                                <polyline points="16 18 22 12 16 6"></polyline>
+                                <polyline points="8 6 2 12 8 18"></polyline>
+                            </svg>
+                            <span class="control-text">Debug Info</span>
+                        </label>
+                        <label class="toggle-switch">
+                            <input type="checkbox" id="debugToggle">
+                            <span class="slider"></span>
+                        </label>
+                    </div>
+
+                    <!-- Reset Conversation Button -->
+                    <button id="resetBtn" class="action-btn" title="Reset conversational context and clear chat">
+                        <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <polyline points="1 4 1 10 7 10"></polyline>
+                            <path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"></path>
+                        </svg>
+                        <span>Reset</span>
+                    </button>
+                </div>
+            </header>
+
+            <!-- Chat Messages Area -->
+            <div id="chatMessages" class="chat-messages" role="log" aria-live="polite">
+                <!-- Welcome Message -->
+                <div class="message assistant-message">
+                    <div class="message-avatar">
+                        <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2">
+                            <circle cx="12" cy="12" r="10"></circle>
+                            <path d="M8 14s1.5 2 4 2 4-2 4-2"></path>
+                            <line x1="9" y1="9" x2="9.01" y2="9"></line>
+                            <line x1="15" y1="9" x2="15.01" y2="9"></line>
+                        </svg>
+                    </div>
+                    <div class="message-content">
+                        <div class="message-bubble">
+                            <p><strong>Welcome to CIUX Birthday Assistant (Version 5)! 👋</strong></p>
+                            <p>I can help you check birthdays, count upcoming celebrations, find where people live, and track relationships strictly from your <code>people.xlsx</code> dataset.</p>
+                            <p>You can <strong>type your questions</strong> or click the <strong>microphone</strong> button to speak naturally.</p>
+                        </div>
+                        <span class="message-time">Just now</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Suggested Prompt Chips -->
+            <div id="suggestedChips" class="suggested-chips-container">
+                <span class="chips-label">Suggestions:</span>
+                <button class="chip-btn" data-query="Show upcoming birthdays">🎉 Show upcoming birthdays</button>
+                <button class="chip-btn" data-query="Count birthdays in October">🔢 Count birthdays in October</button>
+                <button class="chip-btn" data-query="Birthdays this month">📅 Birthdays this month</button>
+                <button class="chip-btn" data-query="Where does Rahul live?">📍 Where does Rahul live?</button>
+                <button class="chip-btn" data-query="Who has a birthday tomorrow?">🎂 Tomorrow's birthdays</button>
+            </div>
+
+            <!-- Loading / Typing Indicator -->
+            <div id="typingIndicator" class="typing-indicator-wrapper hidden">
+                <div class="typing-bubble">
+                    <span class="dot"></span>
+                    <span class="dot"></span>
+                    <span class="dot"></span>
+                </div>
+                <span class="typing-text">Processing your query...</span>
+            </div>
+
+            <!-- Input Bar -->
+            <footer class="chat-footer">
+                <form id="chatForm" class="input-form" onsubmit="return false;">
+                    <!-- Microphone Speech Recognition Button -->
+                    <button type="button" id="micBtn" class="mic-btn" title="Click to speak (Voice Input - en-IN)" aria-label="Microphone Voice Input">
+                        <svg class="mic-icon" viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"></path>
+                            <path d="M19 10v2a7 7 0 0 1-14 0v-2"></path>
+                            <line x1="12" y1="19" x2="12" y2="23"></line>
+                            <line x1="8" y1="23" x2="16" y2="23"></line>
+                        </svg>
+                        <span class="pulse-ring"></span>
+                    </button>
+
+                    <!-- Text input field -->
+                    <input
+                        type="text"
+                        id="chatInput"
+                        class="chat-input"
+                        placeholder="Ask about birthdays, locations, counts, or speak with mic..."
+                        autocomplete="off"
+                        aria-label="Chat input query"
+                    />
+
+                    <!-- Send Button -->
+                    <button type="submit" id="sendBtn" class="send-btn" title="Send query" aria-label="Send message">
+                        <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <line x1="22" y1="2" x2="11" y2="13"></line>
+                            <polygon points="22 2 15 22 11 13 2 9 22 2"></polygon>
+                        </svg>
+                    </button>
+                </form>
+                <div class="input-helper">
+                    <span id="speechFeedback" class="speech-feedback"></span>
+                    <span class="dataset-note">Dataset: <strong>people.xlsx</strong> • English (India) en-IN Voice</span>
+                </div>
+            </footer>
+        </main>
+
+        <!-- Debug Information Drawer / Panel -->
+        <aside id="debugPanel" class="debug-panel hidden" aria-label="NLU Debug Panel">
+            <div class="debug-header">
+                <div class="debug-title-group">
+                    <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2">
+                        <polyline points="16 18 22 12 16 6"></polyline>
+                        <polyline points="8 6 2 12 8 18"></polyline>
+                    </svg>
+                    <h2>NLU & Session Diagnostics</h2>
+                </div>
+                <button id="closeDebugBtn" class="close-debug-btn" title="Close Debug Panel">&times;</button>
+            </div>
+            <div class="debug-body">
+                <div class="debug-section">
+                    <h3>Last Turn Execution</h3>
+                    <pre><code id="debugContent">No query executed yet. Turn on Debug Info and send a message.</code></pre>
+                </div>
+                <div class="debug-section">
+                    <h3>System Architecture</h3>
+                    <ul class="debug-notes">
+                        <li><strong>Grounding:</strong> 100% Excel data lookup</li>
+                        <li><strong>NLU Engine:</strong> LLM with Rule-Based Fallback</li>
+                        <li><strong>Speech Input:</strong> Web Speech API (en-IN)</li>
+                        <li><strong>Speech Output:</strong> SpeechSynthesisUtterance</li>
+                    </ul>
+                </div>
+            </div>
+        </aside>
+    </div>
+
+    <!-- Application JavaScript -->
+    <script src="{{ url_for('static', filename='chat.js') }}"></script>
+</body>
+</html>

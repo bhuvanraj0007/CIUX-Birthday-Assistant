@@ -1,0 +1,290 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Birthday Assistant | V2</title>
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: Arial, sans-serif;
+        }
+
+        body {
+            min-height: 100vh;
+            background: linear-gradient(135deg, #e8efff, #f5eaff);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 850px;
+            height: 90vh;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.12);
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #2457c5, #7438c9);
+            color: white;
+            padding: 25px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 25px;
+            margin-bottom: 8px;
+        }
+
+        .header p {
+            font-size: 14px;
+            opacity: 0.9;
+        }
+
+        .status {
+            margin-top: 12px;
+            font-size: 12px;
+            color: #d9ffe4;
+        }
+
+        .suggestions {
+            padding: 15px 20px;
+            background: #f8f9ff;
+            border-bottom: 1px solid #eee;
+        }
+
+        .suggestions p {
+            font-size: 13px;
+            font-weight: bold;
+            margin-bottom: 10px;
+            color: #555;
+        }
+
+        .suggestion-list {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+
+        .suggestion-list button {
+            background: white;
+            border: 1px solid #d6dcf0;
+            color: #3157a5;
+            padding: 8px 12px;
+            border-radius: 20px;
+            cursor: pointer;
+            font-size: 12px;
+        }
+
+        .suggestion-list button:hover {
+            background: #e9edff;
+        }
+
+        .chat-box {
+            flex: 1;
+            padding: 22px;
+            overflow-y: auto;
+            background: #fcfcff;
+        }
+
+        .message {
+            margin-bottom: 18px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .user {
+            align-items: flex-end;
+        }
+
+        .assistant {
+            align-items: flex-start;
+        }
+
+        .bubble {
+            max-width: 80%;
+            padding: 13px 17px;
+            border-radius: 15px;
+            line-height: 1.5;
+            font-size: 14px;
+            white-space: pre-wrap;
+        }
+
+        .user .bubble {
+            background: #285bbb;
+            color: white;
+            border-bottom-right-radius: 4px;
+        }
+
+        .assistant .bubble {
+            background: #edf0f8;
+            color: #222;
+            border-bottom-left-radius: 4px;
+        }
+
+        .debug {
+            margin-top: 8px;
+            max-width: 85%;
+            background: #f1f3f7;
+            border: 1px solid #ddd;
+            padding: 10px;
+            border-radius: 8px;
+            font-size: 11px;
+            color: #444;
+            white-space: pre-wrap;
+            overflow-wrap: anywhere;
+        }
+
+        .input-area {
+            display: flex;
+            gap: 10px;
+            padding: 18px;
+            border-top: 1px solid #eee;
+            background: white;
+        }
+
+        .input-area input {
+            flex: 1;
+            padding: 14px;
+            border: 1px solid #d5d9e5;
+            border-radius: 25px;
+            outline: none;
+            font-size: 14px;
+        }
+
+        .input-area input:focus {
+            border-color: #285bbb;
+        }
+
+        .input-area button {
+            border: none;
+            background: #285bbb;
+            color: white;
+            padding: 0 24px;
+            border-radius: 25px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+
+        .input-area button:hover {
+            background: #173f91;
+        }
+
+        .input-area button:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+
+        .footer {
+            text-align: center;
+            padding: 10px;
+            font-size: 11px;
+            color: #888;
+            background: white;
+        }
+
+        @media(max-width: 600px) {
+            .container {
+                height: 95vh;
+            }
+
+            .header h1 {
+                font-size: 20px;
+            }
+
+            .bubble {
+                max-width: 90%;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="container">
+
+        <header class="header">
+            <h1>🎂 Birthday Assistant</h1>
+            <p>Your Personal Birthday Information Assistant</p>
+            <div class="status">● V2 - Intent & Entity Based NLU</div>
+        </header>
+
+        <section class="suggestions">
+
+            <p>Try asking:</p>
+
+            <div class="suggestion-list">
+
+                <button onclick="askQuestion('What are the upcoming birthdays?')">
+                    Upcoming Birthdays
+                </button>
+
+                <button onclick="askQuestion('Count nephew birthdays in September')">
+                    Count Birthdays
+                </button>
+
+                <button onclick="askQuestion('Where does Rahul Patil stay?')">
+                    Person Location
+                </button>
+
+                <button onclick="askQuestion('Show birthdays next month')">
+                    Next Month
+                </button>
+
+            </div>
+
+        </section>
+
+        <main class="chat-box" id="chatBox">
+
+            <div class="message assistant">
+                <div class="bubble">
+                    Hello! 👋 Welcome to Birthday Assistant.
+
+                    I can help you find birthdays, count birthday records,
+                    search by relationship and find a person's location.
+
+                    How can I help you today?
+                </div>
+            </div>
+
+        </main>
+
+        <div class="input-area">
+
+            <input
+                type="text"
+                id="messageInput"
+                placeholder="Ask me about birthdays..."
+                autocomplete="off"
+            >
+
+            <button id="sendButton" onclick="sendMessage()">
+                Send ➤
+            </button>
+
+        </div>
+
+        <footer class="footer">
+            Conversational Interfaces and UX | Version 2 | GM University
+        </footer>
+
+    </div>
+
+    <script src="{{ url_for('static', filename='chat.js') }}"></script>
+
+</body>
+
+</html>

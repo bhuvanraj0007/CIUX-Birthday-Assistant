@@ -1,0 +1,21 @@
+# Python virtual environment
+venv/
+env/
+ENV/
+
+# Python bytecode & cache
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Pytest cache
+.pytest_cache/
+.coverage
+htmlcov/
+
+# Archives
+*.zip
+
+# Operating system files
+.DS_Store
+Thumbs.db

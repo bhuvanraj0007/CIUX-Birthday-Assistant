@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CIUX Birthday Assistant V4</title>
+  <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+  <div class="app-layout">
+    <!-- Main Chat Window -->
+    <main class="chat-wrapper">
+      <!-- Chat Header -->
+      <header class="chat-header">
+        <div class="header-branding">
+          <div class="brand-avatar">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+              <circle cx="12" cy="7" r="4"></circle>
+              <path d="M12 2v2"></path>
+              <path d="M10 2h4"></path>
+            </svg>
+          </div>
+          <div class="brand-info">
+            <div class="brand-title-row">
+              <h1 class="brand-title">CIUX Birthday Assistant</h1>
+              <span class="badge badge-version">V4.0</span>
+            </div>
+            <p class="brand-subtitle">
+              Strictly fact-grounded in <code class="code-pill">people.xlsx</code>
+              <span class="badge-dot" title="Dataset Connected"></span>
+              <span class="dataset-count">{{ records_count }} records loaded</span>
+            </p>
+          </div>
+        </div>
+
+        <div class="header-actions">
+          <button id="btn-toggle-debug" class="btn btn-secondary btn-icon" title="Toggle NLU Debug Panel" aria-label="Toggle Debug Info">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="12" cy="12" r="10"></circle>
+              <line x1="12" y1="16" x2="12" y2="12"></line>
+              <line x1="12" y1="8" x2="12.01" y2="8"></line>
+            </svg>
+            <span class="btn-text">Debug</span>
+          </button>
+
+          <button id="btn-reset" class="btn btn-secondary btn-icon btn-reset" title="Reset conversation memory" aria-label="Reset Conversation">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"></path>
+              <path d="M3 3v5h5"></path>
+            </svg>
+            <span class="btn-text">Reset Chat</span>
+          </button>
+        </div>
+      </header>
+
+      <!-- Chat Messages Container -->
+      <section id="chat-messages" class="chat-messages" aria-live="polite">
+        <!-- Initial Welcome Message -->
+        <div class="message assistant-message animate-fade-in">
+          <div class="message-avatar">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M12 2v2"></path>
+              <path d="m4.93 4.93 1.41 1.41"></path>
+              <path d="M20 12h2"></path>
+              <path d="m19.07 4.93-1.41 1.41"></path>
+              <path d="M15.34 18a3.5 3.5 0 0 0 2.66-3.5 4 4 0 0 0-4-4 4 4 0 0 0-4 4 3.5 3.5 0 0 0 2.66 3.5"></path>
+              <path d="M8 18v2a2 2 0 0 0 2 2h4a2 2 0 0 0 2-2v-2"></path>
+            </svg>
+          </div>
+          <div class="message-bubble">
+            <div class="message-header">
+              <span class="sender-name">Birthday Assistant</span>
+              <span class="message-tag">Factual Assistant</span>
+            </div>
+            <div class="message-body">
+              <p>Hello! I am your <strong>CIUX Birthday Assistant (V4)</strong>.</p>
+              <p>I answer questions about birthdays, locations, and relationships strictly using the data in <code>people.xlsx</code>. I never invent personal information.</p>
+              <p>Try one of the suggested prompts below or ask a question in natural language!</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Loading / Typing Indicator -->
+      <div id="loading-indicator" class="loading-indicator" style="display: none;">
+        <div class="message assistant-message">
+          <div class="message-avatar">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <circle cx="12" cy="12" r="10"></circle>
+              <polyline points="12 6 12 12 16 14"></polyline>
+            </svg>
+          </div>
+          <div class="message-bubble loading-bubble">
+            <div class="typing-dots">
+              <span></span>
+              <span></span>
+              <span></span>
+            </div>
+            <span class="loading-label">Querying dataset...</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Suggested Prompts Bar -->
+      <section class="suggested-prompts-container" aria-label="Suggested Prompts">
+        <div class="prompts-scroll" id="suggested-prompts">
+          <button class="prompt-chip" data-prompt="Show upcoming birthdays">
+            🎂 Upcoming birthdays
+          </button>
+          <button class="prompt-chip" data-prompt="Show birthdays in September">
+            📅 Birthdays this month
+          </button>
+          <button class="prompt-chip" data-prompt="How many nephews have birthdays in October?">
+            🔢 Count birthdays
+          </button>
+          <button class="prompt-chip" data-prompt="When is Rahul's birthday?">
+            🔍 Find someone's birthday
+          </button>
+          <button class="prompt-chip" data-prompt="Where does Rahul live?">
+            📍 Find someone's location
+          </button>
+          <button class="prompt-chip" data-prompt="Tomorrow's birthdays">
+            ⚡ Tomorrow's birthdays
+          </button>
+        </div>
+      </section>
+
+      <!-- Chat Input Area -->
+      <footer class="chat-input-area">
+        <form id="chat-form" class="chat-input-form" onsubmit="return false;">
+          <div class="input-wrapper">
+            <input
+              type="text"
+              id="user-input"
+              class="chat-input"
+              placeholder="Ask about birthdays, upcoming dates, counts, or locations..."
+              autocomplete="off"
+              required
+              aria-label="User message input"
+            />
+          </div>
+          <button type="submit" id="btn-send" class="btn btn-primary btn-send" aria-label="Send message">
+            <span>Send</span>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <line x1="22" y1="2" x2="11" y2="13"></line>
+              <polygon points="22 2 15 22 11 13 2 9 22 2"></polygon>
+            </svg>
+          </button>
+        </form>
+      </footer>
+    </main>
+
+    <!-- Collapsible Debug Sidebar -->
+    <aside id="debug-panel" class="debug-panel">
+      <div class="debug-header">
+        <div class="debug-title">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M12 20h9"></path>
+            <path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"></path>
+          </svg>
+          <h3>NLU Debug Inspector</h3>
+        </div>
+        <button id="btn-close-debug" class="btn-close" aria-label="Close Debug Panel">&times;</button>
+      </div>
+
+      <div class="debug-content" id="debug-content">
+        <div class="debug-group">
+          <label>Detected Intent</label>
+          <div id="debug-intent" class="debug-value debug-intent-pill">No query yet</div>
+        </div>
+
+        <div class="debug-group">
+          <label>NLU Engine Used</label>
+          <div id="debug-engine" class="debug-value">Rule-based / Fallback</div>
+        </div>
+
+        <div class="debug-group">
+          <label>Extracted Entities</label>
+          <pre id="debug-entities" class="debug-code-box">{}</pre>
+        </div>
+
+        <div class="debug-group">
+          <label>Session Context & Memory</label>
+          <pre id="debug-context" class="debug-code-box">{}</pre>
+        </div>
+
+        <div class="debug-group">
+          <label>Dataset Source</label>
+          <div class="debug-value">data/people.xlsx (Strict Factual Only)</div>
+        </div>
+      </div>
+    </aside>
+  </div>
+
+  <script src="/static/chat.js"></script>
+</body>
+</html>

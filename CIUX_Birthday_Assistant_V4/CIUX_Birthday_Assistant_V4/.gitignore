@@ -1,0 +1,29 @@
+# Python bytecode and cache files
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.pytest_cache/
+
+# Virtual environments
+venv/
+env/
+ENV/
+.venv/
+
+# Environment and sensitive secrets
+.env
+
+# Logs and temporary files
+*.log
+*.tmp
+
+# Packaging
+*.zip
+dist/
+build/
+*.egg-info/
+
+# Operating system files
+.DS_Store
+Thumbs.db
